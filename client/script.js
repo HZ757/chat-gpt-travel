@@ -6,6 +6,8 @@ const chatContainer = document.querySelector('#chat_container')
 
 let loadInterval;
 
+let messages = {"role": "sadfasd"}
+
 
 function loader(element) {
   element.textContext = '';
