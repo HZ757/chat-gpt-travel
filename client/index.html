@@ -9,11 +9,20 @@
   </head>
   <body>
     <div id="app">
-      <div id="chat_container"></div>
-      <form>
-        <textarea name="prompt" rows="1" cols="1" placeholder="Ask Codex..."></textarea>
-        <button type="submit"><img src="assets/send.svg"></button>
-      </form>
+      <div id="chat_area">
+        <div id="chat_container"></div>
+        <form>
+          <textarea name="prompt" rows="1" cols="1" placeholder="Ask Codex..."></textarea>
+          <button type="submit"><img src="assets/send.svg"></button>
+        </form>
+      </div>
+      <div id="itinerary_area">
+        <div id="itinerary"></div>
+      </div>
+      <div id="info_area">
+        <div id="hotel"></div>
+        <div id="flight"></div>
+      </div>
     </div>
     <script type="module" src="script.js"></script>
   </body>
