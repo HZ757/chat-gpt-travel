@@ -3,10 +3,13 @@ import user from './assets/user.svg';
 
 const form = document.querySelector('form');
 const chatContainer = document.querySelector('#chat_container')
+const itineraryContainer = document.querySelector('#itinerary')
+const hotelContainer = document.querySelector('#hotel')
+const flightContainer = document.querySelector('#flight')
 
 let loadInterval;
 
-let messages = [{role: "system", content: "You are a helpful assistant who aims to help the user plan a vacation. Talk to the user and ask them questions until you can confidently extract the following info about the vacation: Itinerary, departure airport code, arrival airport code, destination city, dates of vacation. Do not leave the itinerary empty, suggest some things to do. Then output a JSON object with the following structure: {vacation_location: '', departure_code: '', arrival_code: '', start_date: '', end_date: '', itinerary: {}"},
+let messages = [{role: "system", content: "You are a helpful assistant who aims to help the user plan a vacation. Talk to the user and ask them questions until you can confidently extract the following info about the vacation: Itinerary, departure airport code, arrival airport code, destination city, dates of vacation. Do not leave the itinerary empty, describe each day of the vacation in a few sentences. The current year is 2023. Then output a JSON object with the following structure: {vacation_location: '', departure_code: '', arrival_code: '', start_date: '', end_date: '', itinerary: {}"},
                 {role: "assistant", content: "Hello, how may I help you plan a vacation?"}]
 
 chatContainer.innerHTML += chatStripe(true, "Hello, how may I help you plan a vacation?", 0);
@@ -67,11 +70,93 @@ function chatStripe(isAi, value, uniqueId) {
   )
 }
 
-function itinieraryStripe(itinerary) {
+function addItinerary(itinerary) {
+  console.log(itinerary)
+
+  for (var key in itinerary)
+  {
+    itineraryContainer.innerHTML +=  
+    `
+     <div class="wrapper">
+        <div class="chat">
+          <div class="profile">
+            <div>${key}</div>
+          </div>
+          <div class="message">${itinerary[key]}</div>
+        </div>
+      </div>
+      `;
+  }
+}
+
+function addFlight(departure_code, arrival_code, start_date, end_date){
+  console.log(departure_code, arrival_code, start_date, end_date)
+
+  flightContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>DEP</div>
+      </div>
+      <div class="message">${departure_code}</div>
+    </div>
+  </div>
+  `;
+
+  flightContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>ARR</div>
+      </div>
+      <div class="message">${arrival_code}</div>
+    </div>
+  </div>
+  `;
+
+  flightContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>Dates</div>
+      </div>
+      <div class="message">${start_date} - ${end_date}</div>
+    </div>
+  </div>
+  `;
 
 }
 
-function flightStripe
+function addHotel(location, start_date, end_date) {
+  console.log(location, start_date, end_date)
+
+  hotelContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>City</div>
+      </div>
+      <div class="message">${location}</div>
+    </div>
+  </div>
+  `;
+
+  hotelContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>Dates</div>
+      </div>
+      <div class="message">${start_date} - ${end_date}</div>
+    </div>
+  </div>
+  `;
+}
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -130,9 +215,13 @@ const handleSubmit = async (e) => {
       let startJson = parsedData.indexOf("{")
       let lastJson = parsedData.lastIndexOf("}")
       
-      let jsonString = parsedData.substring(startJson, lastJson + 1)
+      let tripJSON = JSON.parse(parsedData.substring(startJson, lastJson + 1))
 
-      console.log(jsonString)
+      console.log(tripJSON)
+
+      addItinerary(tripJSON.itinerary)
+      addFlight(tripJSON.departure_code, tripJSON.arrival_code, tripJSON.start_date, tripJSON.end_date)
+      addHotel(tripJSON.vacation_location, tripJSON.start_date, tripJSON.end_date)
     }
   } else {
     const err = await response.text();
