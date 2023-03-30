@@ -140,18 +140,24 @@ function addFlight(departure_code, arrival_code, start_date, end_date){
 
 }
 
-function addHotel(location, start_date, end_date) {
-  console.log(location, start_date, end_date)
+function addHotel(url, hotel_name, city_name, composite_price_breakdown, max_photo_url) {
   hotelContainer.innerHTML = ``
+
+  hotelContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <img src="${max_photo_url}" alt="Hotel Image" width="160", height="90">
+  </div>
+  `;
 
   hotelContainer.innerHTML +=
   `
   <div class="wrapper">
     <div class="chat">
       <div class="profile">
-        <div>City</div>
+        <div>Hotel</div>
       </div>
-      <div class="message">${location}</div>
+      <div class="message">${hotel_name}</div>
     </div>
   </div>
   `;
@@ -161,9 +167,33 @@ function addHotel(location, start_date, end_date) {
   <div class="wrapper">
     <div class="chat">
       <div class="profile">
-        <div>Dates</div>
+        <div>City</div>
       </div>
-      <div class="message">${start_date} - ${end_date}</div>
+      <div class="message">${city_name}</div>
+    </div>
+  </div>
+  `;
+
+  hotelContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>Price</div>
+      </div>
+      <div class="message">${composite_price_breakdown.all_inclusive_amount.value.toString()} ${composite_price_breakdown.all_inclusive_amount.currency}</div>
+    </div>
+  </div>
+  `;
+
+  hotelContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>Link</div>
+      </div>
+      <a href="${url}" class="message">Book Here</a>
     </div>
   </div>
   `;
@@ -245,6 +275,8 @@ const handleSubmit = async (e) => {
       if (hotelResponse.ok) {
         const hotelData = await hotelResponse.json();
         console.log(hotelData)
+
+        addHotel(hotelData.url, hotelData.hotel_name, hotelData.city_name, hotelData.composite_price_breakdown, hotelData.max_photo_url)
       } else {
         const err = await hotelResponse.text();
     
@@ -255,7 +287,6 @@ const handleSubmit = async (e) => {
 
       addItinerary(tripJSON.itinerary)
       addFlight(tripJSON.departure_code, tripJSON.arrival_code, tripJSON.start_date, tripJSON.end_date)
-      addHotel(tripJSON.vacation_location, tripJSON.start_date, tripJSON.end_date)
     }
   } else {
     const err = await response.text();

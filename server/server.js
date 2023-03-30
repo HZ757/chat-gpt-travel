@@ -120,4 +120,13 @@ app.post('/hotel', async (req, res) => {
     }
 })
 
+app.post('/flights', async (req, res) => {
+    try {
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
+    }
+})
+
 app.listen(5001, ()=> console.log('Server is running on port http://localhost:5001'));
