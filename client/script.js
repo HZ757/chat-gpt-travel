@@ -138,6 +138,18 @@ function addFlight(departure_code, arrival_code, start_date, end_date){
   </div>
   `;
 
+  flightContainer.innerHTML +=
+  `
+  <div class="wrapper">
+    <div class="chat">
+      <div class="profile">
+        <div>Link</div>
+      </div>
+      <a href="https://www.kayak.com/flights/${departure_code}-${arrival_code}/${start_date}/${end_date}/?sort=bestflight_a"  class="message">See Flights</a>
+    </div>
+  </div>
+  `;
+
 }
 
 function addHotel(url, hotel_name, city_name, composite_price_breakdown, max_photo_url) {
