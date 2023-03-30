@@ -9,7 +9,15 @@ const flightContainer = document.querySelector('#flight')
 
 let loadInterval;
 
-let messages = [{role: "system", content: "You are a helpful assistant who aims to help the user plan a vacation. Talk to the user and ask them questions until you can confidently extract the following info about the vacation: Itinerary, departure airport code, arrival airport code, destination city, dates of vacation. Do not leave the itinerary empty, describe each day of the vacation in a few sentences. The current year is 2023. Then output a JSON object with the following structure: {vacation_location: '', departure_code: '', arrival_code: '', start_date: '', end_date: '', itinerary: {}"},
+let messages = [{role: "system", content: `
+
+You are a helpful assistant who aims to help the user plan a vacation. Talk to the user and ask them questions until you can confidently extract the following info about the vacation: Itinerary, departure airport code, arrival airport code, destination city, dates of vacation. Do not leave the itinerary empty, describe each day of the vacation in a few sentences. The current year is 2023. Do not ask irrelevant questions here.
+
+Then once the neccesary info is collected, output a JSON object with the following structure: {vacation_location: '', departure_code: '', arrival_code: '', start_date: '', end_date: '', itinerary: {}}
+
+dates shall be in the format: YYYY-MM-DD
+
+`},
                 {role: "assistant", content: "Hello, how may I help you plan a vacation?"}]
 
 chatContainer.innerHTML += chatStripe(true, "Hello, how may I help you plan a vacation?", 0);
@@ -72,6 +80,7 @@ function chatStripe(isAi, value, uniqueId) {
 
 function addItinerary(itinerary) {
   console.log(itinerary)
+  itineraryContainer.innerHTML = ``
 
   for (var key in itinerary)
   {
@@ -91,6 +100,7 @@ function addItinerary(itinerary) {
 
 function addFlight(departure_code, arrival_code, start_date, end_date){
   console.log(departure_code, arrival_code, start_date, end_date)
+  flightContainer.innerHTML = ``
 
   flightContainer.innerHTML +=
   `
@@ -132,6 +142,7 @@ function addFlight(departure_code, arrival_code, start_date, end_date){
 
 function addHotel(location, start_date, end_date) {
   console.log(location, start_date, end_date)
+  hotelContainer.innerHTML = ``
 
   hotelContainer.innerHTML +=
   `
@@ -218,6 +229,29 @@ const handleSubmit = async (e) => {
       let tripJSON = JSON.parse(parsedData.substring(startJson, lastJson + 1))
 
       console.log(tripJSON)
+
+      const hotelResponse = await fetch('http://localhost:5001/hotel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          location: tripJSON.vacation_location,
+          start_date: tripJSON.start_date,
+          end_date: tripJSON.end_date
+        })
+      })
+
+      if (hotelResponse.ok) {
+        const hotelData = await hotelResponse.json();
+        console.log(hotelData)
+      } else {
+        const err = await hotelResponse.text();
+    
+        messageDiv.innerHTML = "Something went wrong";
+    
+        alert(err);
+      }
 
       addItinerary(tripJSON.itinerary)
       addFlight(tripJSON.departure_code, tripJSON.arrival_code, tripJSON.start_date, tripJSON.end_date)
