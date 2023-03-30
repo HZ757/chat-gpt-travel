@@ -23,21 +23,15 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res) => {
     try {
-        const prompt = req.body.prompt;
+        const messages = req.body.messages;
 
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: `${prompt}`
-            ,
-            temperature: 0.2,
-            max_tokens: 3000,
-            top_p: 1,
-            frequency_penalty: 0.5,
-            presence_penalty: 0,
-        });
+        const response = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: messages,
+          });
 
         res.status(200).send({
-            bot: response.data.choices[0].text
+            bot: response.data.choices[0].message
         })
     } catch (error) {
         console.log(error);

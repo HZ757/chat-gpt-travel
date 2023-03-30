@@ -6,7 +6,10 @@ const chatContainer = document.querySelector('#chat_container')
 
 let loadInterval;
 
-let messages = {"role": "sadfasd"}
+let messages = [{role: "system", content: "You are a helpful assistant who aims to help the user plan a vacation. Talk to the user and ask them questions until you can confidently extract the following info about the vacation: Itinerary, departure airport code, arrival airport code, destination city, dates of vacation. Do not leave the itinerary empty, suggest some things to do. Then output a JSON object with the following structure: {vacation_location: '', departure_code: '', arrival_code: '', start_date: '', end_date: '', itinerary: {}"},
+                {role: "assistant", content: "Hello, how may I help you plan a vacation?"}]
+
+chatContainer.innerHTML += chatStripe(true, "Hello, how may I help you plan a vacation?", 0);
 
 
 function loader(element) {
@@ -64,6 +67,12 @@ function chatStripe(isAi, value, uniqueId) {
   )
 }
 
+function itinieraryStripe(itinerary) {
+
+}
+
+function flightStripe
+
 const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -71,6 +80,8 @@ const handleSubmit = async (e) => {
 
   // user's chatstripe
   chatContainer.innerHTML += chatStripe(false, data.get('prompt'));
+
+  messages.push({role: "user", content: data.get('prompt')})
 
   form.reset();
 
@@ -95,7 +106,7 @@ const handleSubmit = async (e) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      prompt: data.get('prompt')
+      messages: messages
     })
   })
 
@@ -104,11 +115,25 @@ const handleSubmit = async (e) => {
 
   if (response.ok) {
     const data = await response.json();
-    const parsedData = data.bot.trim();
+    const parsedData = data.bot.content;
 
     console.log({parsedData})
 
     typeText(messageDiv, parsedData);
+
+    messages.push({role: "assistant", content: parsedData})
+
+    // check if the parsedData has '{', find first '{' and last '}', very likely to contain the json object
+
+    if (parsedData.indexOf("{") > 0 || parsedData.lastIndexOf("}") > parsedData.indexOf("{"))
+    {
+      let startJson = parsedData.indexOf("{")
+      let lastJson = parsedData.lastIndexOf("}")
+      
+      let jsonString = parsedData.substring(startJson, lastJson + 1)
+
+      console.log(jsonString)
+    }
   } else {
     const err = await response.text();
 
